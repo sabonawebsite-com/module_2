@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechCraft | Modern Web Solutions</title>
+  <style>
+    /* ==========================================
+   1. CSS VARIABLES & SYSTEM RESET
+   ========================================== */
+:root {
+  /* Color Palette */
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --bg-dark: #0f172a;
+  --bg-light: #f8fafc;
+  --bg-white: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+
+  /* Typography & Layout Spacing */
+  --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --max-width: 1100px;
+  --radius: 8px;
+}
+
+/* Box Sizing Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-family);
+  color: var(--text-main);
+  background-color: var(--bg-light);
+  line-height: 1.6;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Base Headings & Links */
+h1, h2, h3 {
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+/* ==========================================
+   2. HEADER & NAVIGATION (FLEXBOX)
+   ========================================== */
+header {
+  background-color: var(--bg-white);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 1rem 2rem;
+  
+  /* Flexbox space-between layout */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header .logo {
+  font-size: 1.25rem;
+  color: var(--bg-dark);
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+  gap: 1.5rem;
+}
+
+nav a {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+nav a:hover {
+  color: var(--primary);
+}
+
+/* ==========================================
+   3. HERO SECTION
+   ========================================== */
+#home {
+  background: linear-gradient(135deg, var(--bg-dark) 0%, #1e293b 100%);
+  color: var(--bg-white);
+  padding: 5rem 2rem;
+  text-align: center;
+  
+  /* Flexbox centering */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#home h1 {
+  font-size: clamp(2rem, 5vw, 3.25rem); /* Fluid typography */
+  max-width: 800px;
+  margin-bottom: 1.25rem;
+}
+
+#home p {
+  font-size: 1.2rem;
+  color: #94a3b8;
+  max-width: 600px;
+  margin-bottom: 2rem;
+}
+
+#home a {
+  background-color: var(--primary);
+  color: var(--bg-white);
+  padding: 0.85rem 1.75rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+#home a:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+/* ==========================================
+   4. FEATURES SECTION (FLEXBOX GRID)
+   ========================================== */
+#features {
+  max-width: var(--max-width);
+  margin: 4rem auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+#features h2 {
+  font-size: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+/* Wrap container for cards */
+#features {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.features-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  width: 100%;
+}
+
+#features article {
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 2rem;
+  text-align: left;
+  flex: 1 1 280px; /* Grow, shrink, base width */
+  max-width: 340px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+#features article:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+}
+
+#features h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  color: var(--bg-dark);
+}
+
+#features p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* ==========================================
+   5. CONTACT FORM SECTION
+   ========================================== */
+#contact {
+  background-color: var(--bg-white);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 4rem 2rem;
+}
+
+#contact h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+#contact form {
+  max-width: 550px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+#contact form div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#contact label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+#contact input,
+#contact select,
+#contact textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#contact input:focus,
+#contact select:focus,
+#contact textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+#contact button[type="submit"] {
+  background-color: var(--primary);
+  color: var(--bg-white);
+  border: none;
+  padding: 0.85rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#contact button[type="submit"]:hover {
+  background-color: var(--primary-hover);
+}
+
+/* ==========================================
+   6. FOOTER (FLEXBOX)
+   ========================================== */
+footer {
+  margin-top: auto;
+  background-color: var(--bg-dark);
+  color: #94a3b8;
+  padding: 2rem;
+  font-size: 0.9rem;
+  
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+footer a {
+  color: #cbd5e1;
+}
+
+footer a:hover {
+  color: var(--bg-white);
+}
+/* Hide Checkbox Initially */
+.menu-toggle {
+  display: none;
+}
+
+/* Base Hamburger Button Styling */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 28px;
+  height: 22px;
+  cursor: pointer;
+  z-index: 101;
+}
+
+.hamburger span {
+  width: 100%;
+  height: 3px;
+  background-color: var(--bg-dark);
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* ==========================================
+   MOBILE MEDIA QUERY (SCREEN SHIFT AT 768px)
+   ========================================== */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  /* Slide-down Mobile Navigation Drawer */
+  header nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--bg-white);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease-in-out;
+  }
+
+  header nav ul {
+    flex-direction: column;
+    padding: 1.5rem 2rem;
+    gap: 1.25rem;
+  }
+
+  /* When Checkbox is Checked: Expand Menu */
+  .menu-toggle:checked ~ nav {
+    max-height: 300px;
+  }
+
+  /* Animate Hamburger Bars into an 'X' */
+  .menu-toggle:checked ~ .hamburger span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .menu-toggle:checked ~ .hamburger span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-toggle:checked ~ .hamburger span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+}
+  </style>
+</head>
+<body>
+
+  <!-- Header Section -->
+  <header>
+    <a href="#home" class="logo"><strong>TechCraft</strong></a>
+    <nav>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Main Content Body -->
+  <main>
+
+    <!-- Hero Section -->
+    <section id="home">
+      <h1>Build Scalable Web Applications</h1>
+      <p>We craft high-performance web experiences using modern technologies and semantic architecture.</p>
+      <a href="#contact">Get Started Today</a>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features">
+      <h2>Why Choose Us</h2>
+      <div class="features-grid">
+        <article>
+          <h3>Lightning Fast Performance</h3>
+          <p>Optimized asset delivery and clean code ensure top-tier loading speeds across all devices.</p>
+        </article>
+
+        <article>
+          <h3>Accessible & SEO-First</h3>
+          <p>Built with modern HTML5 semantic standards to guarantee screen-reader support and search visibility.</p>
+        </article>
+
+        <article>
+          <h3>Fully Responsive</h3>
+          <p>Flawless layouts across mobile viewports, tablets, and desktop displays.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+      <h2>Get in Touch</h2>
+      <form action="/submit-contact" method="POST">
+        <div>
+          <label for="fullname">Full Name:</label>
+          <input type="text" id="fullname" name="fullname" placeholder="Jane Doe" required>
+        </div>
+
+        <div>
+          <label for="email">Email Address:</label>
+          <input type="email" id="email" name="email" placeholder="jane@example.com" required>
+        </div>
+
+        <div>
+          <label for="subject">Subject:</label>
+          <select id="subject" name="subject">
+            <option value="general">General Inquiry</option>
+            <option value="project">New Project Proposal</option>
+            <option value="support">Technical Support</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="message">Your Message:</label>
+          <textarea id="message" name="message" rows="5" placeholder="Tell us about your project..."></textarea>
+        </div>
+
+        <button type="submit">Send Message</button>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- Footer Section -->
+  <footer>
+    <p>&copy; 2026 TechCraft Technologies. All rights reserved.</p>
+    <nav aria-label="Footer Navigation">
+      <a href="#privacy">Privacy Policy</a> | 
+      <a href="#terms">Terms of Service</a>
+    </nav>
+  </footer>
+
+</body>
+</html>

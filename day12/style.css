@@ -1,0 +1,36 @@
+.form-body{
+    text-align: center;
+    padding: 10px;
+    border-radius: 20px;
+    background-color: #666666;
+    
+}
+label{
+    font-size: 20px;
+    color: red;
+    padding: 5px;
+    
+}
+input{
+    font-size: 15px;
+    padding: 5px;
+    margin: 5px;
+
+}
+#sub{
+    padding: 20px;
+    border: 1 solid;
+    border-radius: 30px;
+    color:white;
+    font-size: 20px;
+    cursor: pointer;
+    background-color: green;
+    border: none;
+}
+#sub:hover{
+     background-color: rgb(200, 51, 138);
+    border: none;
+    padding: 25px;
+    border: 2 solid;
+    border-radius: 30px;
+}
