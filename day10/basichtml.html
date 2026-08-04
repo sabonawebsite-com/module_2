@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TechCraft | Modern Web Solutions</title>
   <style>
-    /* ==========================================
-   1. CSS VARIABLES & SYSTEM RESET
-   ========================================== */
 :root {
   /* Color Palette */
   --primary: #2563eb;
@@ -25,7 +22,6 @@
   --radius: 8px;
 }
 
-/* Box Sizing Reset */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -200,9 +196,6 @@ nav a:hover {
   font-size: 0.95rem;
 }
 
-/* ==========================================
-   5. CONTACT FORM SECTION
-   ========================================== */
 #contact {
   background-color: var(--bg-white);
   border-top: 1px solid var(--border-color);
@@ -418,12 +411,12 @@ footer a:hover {
       <form action="/submit-contact" method="POST">
         <div>
           <label for="fullname">Full Name:</label>
-          <input type="text" id="fullname" name="fullname" placeholder="Jane Doe" required>
+          <input type="text" id="fullname" name="fullname" placeholder="Sabona Marara" required>
         </div>
 
         <div>
           <label for="email">Email Address:</label>
-          <input type="email" id="email" name="email" placeholder="jane@example.com" required>
+          <input type="email" id="email" name="email" placeholder="sabona@example.com" required>
         </div>
 
         <div>
@@ -440,7 +433,7 @@ footer a:hover {
           <textarea id="message" name="message" rows="5" placeholder="Tell us about your project..."></textarea>
         </div>
 
-        <button type="submit">Send Message</button>
+        <button type="submit" onclick="return validateForm();">Send Message</button>
       </form>
     </section>
 

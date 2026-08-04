@@ -1,0 +1,20 @@
+input{
+    font-size: 20px;
+    border: 1px solid #ccc;
+    color: rgb(16, 15, 22);
+    padding: 5px;
+    margin: 3px;
+    border-radius: 20px;
+    text-align: center;
+
+}
+#sub{
+background-color: rgb(8, 222, 54);
+color: white;
+border: 1px solid rgb(8, 222, 54);
+}
+#sub:hover{
+background-color: rgb(115, 227, 139);
+color: white;
+border: 1px solid rgb(239, 10, 236);
+}
