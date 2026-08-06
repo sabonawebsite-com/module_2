@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBT STUDENT </title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-wrap">
+        <header class="header">
+            <div class="logo">SABO</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#features">HOME</a></li>
+                    <li><a href="#products">PRODUCTS</a></li>
+                    <li><a href="#community">COMMUNITY</a></li>
+                    <li><a href="#contact">CONTACT</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <section class="hero">
+            <div class="hero-copy">
+                <h1>Build responsive Static websites.</h1>
+                <p>Use flex containers to align, reorder, and resize page sections easily across desktop, tablet, and mobile screens.</p>
+                <a class="cta" href="#examples">See in action</a>
+            </div>
+            <div class="hero-image">
+                <img src="./FIFINNE.webp" alt="finfinne">
+            </div>
+        </section>
+
+        <section id="examples" class="card-grid">
+            <article class="card">
+                <h3>Flexible row layout</h3>
+                <p>Flexbox makes horizontal navigation, hero sections, and card rows adapt fluidly to available width.</p>
+            </article>
+            <article class="card">
+                <h3>Reorder on mobile</h3>
+                <p>Change the visual order of content without changing the HTML structure using <code>order</code>.</p>
+            </article>
+            <article class="card">
+                <h3>Center anything</h3>
+                <p>Vertically and horizontally center elements with just a few flex properties, even inside dynamic layouts.</p>
+            </article>
+        </section>
+
+        <section class="product-section" id="products">
+            <div class="product-header">
+                <div>
+                    <h2>Featured Products</h2>
+                    <p>Discover product samples built with responsive layouts, clean UI, and powerful utility for modern web projects.</p>
+                </div>
+                <span class="community-badge">Top Picks</span>
+            </div>
+
+            <div class="product-cards">
+                <article class="product-card">
+                    <h3>Shop app</h3>
+                    <p>A vibrant retail space providing curated, high-quality products, daily essentials, and personalized customer service tailored to the local community.</p>
+                    <div class="price">2000 birr</div>
+                    <div class="badge"> Smart Shop</div>
+                </article>
+                <article class="product-card">
+                    <h3>Caffe App</h3>
+                    <p>A warm, inviting spot offering specialty craft coffee, artisan pastries, and fresh light meals—ideal for a quick morning start, remote work, or relaxed catch-ups..</p>
+                    <div class="price">2000 birr</div>
+                    <div class="badge"> caffe app</div>
+                </article>
+                <article class="product-card">
+                    <h3>Healthcare App</h3>
+                    <p>A modern healthcare facility delivering 24/7 emergency response, advanced diagnostic testing, and compassionate, expert care across multiple medical specialties..</p>
+                    <div class="price">2000 birr</div>
+                    <div class="badge">Healthcare</div>
+                </article>
+            </div>
+        </section>
+
+        <section class="community-section" id="community">
+            <div class="community-top">
+                <div>
+                    <h2>Community Connections</h2>
+                    <p>Join our active community to share ideas, learn new skills, and build better projects together with other creators.</p>
+                </div>
+                <span class="community-badge">Community Hub</span>
+            </div>
+
+            <div class="community-cards">
+                <article class="community-card">
+                    <h3>Weekly meetups</h3>
+                    <p>Connect with peers every week for live demos, code reviews, and practical workshops.</p>
+                </article>
+                <article class="community-card">
+                    <h3>Shared resources</h3>
+                    <p>Access tutorials, UI kits, and design templates curated by the community.</p>
+                </article>
+                <article class="community-card">
+                    <h3>Project challenges</h3>
+                    <p>Take part in friendly coding challenges that sharpen your web layout and responsive design skills.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="contact-section" id="contact">
+            <h2>Contact Us</h2>
+            <p>Send a message to our team and we’ll get back to you quickly. Use the form below to ask questions or request more information.</p>
+
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <div>
+                        <strong>location</strong>
+                        <p>Addis Ababa, Ethiopia</p>
+                    </div>
+                    <div>
+                        <strong>Email</strong>
+                        <p>sabonamarara53@gmail.com</p>
+                    </div>
+                    <div>
+                        <strong>Phone</strong>
+                        <p>+251 928860911</p>
+                    </div>
+                </div>
+
+                <form class="contact-form" action="#" method="POST">
+                    <div class="input-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" placeholder="Enter your name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" placeholder="Tell us how we can help" required></textarea>
+                    </div>
+                    <button type="submit">Send Message</button>
+                </form>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>&copy; 2026 SABO. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

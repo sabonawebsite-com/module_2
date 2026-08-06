@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Habesha Eatery — Order Ahead</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=Noto+Sans+Ethiopic:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================
+   RESET + TOKENS
+   ========================================================== */
+*, *::before, *::after{ box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+
+:root{
+  --paper:#F1DFAF; --paper-2:#E8D093; --ink:#2A1B10;
+  --coffee:#3C2415; --coffee-2:#2A1810;
+  --gold:#C9962B; --clay:#B34B2E; --teal:#2E6E5C;
+  --card:#FFFCF5; --line:rgba(42,27,16,.16); --shadow:rgba(42,27,16,.22);
+  --radius-lg:1rem; --radius-sm:.5rem;
+  --space-1:.5rem; --space-2:1rem; --space-3:1.75rem; --space-4:3rem;
+  --font-display:'Fraunces', Georgia, serif;
+  --font-body:'Work Sans', 'Noto Sans Ethiopic', Arial, sans-serif;
+
+  /* ---- documented z-index scale (Section 3): small numbers, on purpose ---- */
+  --z-nav: 10;
+  --z-float: 40;
+  --z-backdrop: 100;
+  --z-drawer: 101;
+
+  --nav-h: 4.25rem;   /* used to offset sticky elements below the navbar */
+}
+body:has(#theme-toggle:checked){
+  --paper:#181109; --paper-2:#21160c; --ink:#F1E2BE;
+  --coffee:#0F0A06; --coffee-2:#000;
+  --card:#241809; --line:rgba(241,226,190,.14); --shadow:rgba(0,0,0,.55);
+}
+
+html{ font-size: 16px; scroll-behavior: smooth; }
+body{
+  background: var(--paper); color: var(--ink);
+  font-family: var(--font-body); line-height: 1.6;
+}
+h1,h2,h3,.brand,.price{ font-family: var(--font-display); }
+a{ color: inherit; }
+button{ font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+img,svg{ display:block; max-width:100%; }
+a:focus-visible, button:focus-visible, label:focus-within{
+  outline: 3px solid var(--teal); outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce){ *{ transition:none !important; scroll-behavior:auto !important; } }
+
+/* ==========================================================
+   1. PAGE SKELETON — CSS GRID, NAMED AREAS (Section 2)
+   Two dimensions at once: a fixed 220px sidebar column, a
+   flexible main column, and four stacked rows read like ASCII art.
+   ========================================================== */
+.page{
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  grid-template-rows: auto auto 1fr auto;
+  grid-template-areas:
+    "nav    nav"
+    "hero   hero"
+    "aside  main"
+    "footer footer";
+  min-height: 100vh;
+}
+@media (max-width: 860px){
+  .page{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "nav"
+      "hero"
+      "aside"
+      "main"
+      "footer";
+  }
+}
+
+/* ==========================================================
+   2. NAVBAR — FLEXBOX, one dimension, sticky (Section 1 + 3)
+   ========================================================== */
+.navbar{
+  grid-area: nav;
+  position: sticky; top: 0;
+  z-index: var(--z-nav);
+  background: var(--coffee); color: var(--paper);
+  border-bottom: 3px solid var(--gold);
+  height: var(--nav-h);
+}
+.navbar .inner{
+  height: 100%;
+  display: flex;                 /* one axis: a single row */
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-inline: var(--space-3);
+}
+.brand{ font-weight: 600; font-size: 1.4rem; }
+.brand .mark{ color: var(--gold); }
+.navbar .links{ display: flex; gap: var(--space-3); flex-wrap: wrap; font-size: .92rem; }
+.navbar .links a{ text-decoration: none; opacity: .85; }
+.navbar .links a:hover{ opacity: 1; color: var(--gold); }
+.navbar .right{ display: flex; align-items: center; gap: var(--space-2); }
+
+.switch{ display:inline-flex; align-items:center; gap:.5em; font-size:.78rem; cursor:pointer; }
+.switch input{ position:absolute; width:1px; height:1px; opacity:0; }
+.switch .track{
+  --w:2.6em; --h:1.5em; width:var(--w); height:var(--h);
+  background: var(--coffee-2); border: 1px solid var(--gold);
+  border-radius: var(--h); position: relative; transition: background .2s;
+}
+.switch .track::after{
+  content:""; position:absolute; top:2px; left:2px;
+  width:calc(var(--h) - 6px); height:calc(var(--h) - 6px);
+  border-radius:50%; background:var(--gold); transition: transform .2s;
+}
+.switch input:checked ~ .track{ background: var(--teal); }
+.switch input:checked ~ .track::after{ transform: translateX(calc(var(--w) - var(--h))); }
+
+/* floating cart trigger — FIXED, taken clean out of flow (Section 3) */
+.cart-btn{
+  position: fixed;
+  right: var(--space-3); bottom: var(--space-3);
+  z-index: var(--z-float);
+  background: var(--clay); color: #fff;
+  width: 3.4rem; height: 3.4rem; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  box-shadow: 0 8px 20px var(--shadow);
+}
+.cart-btn .count{
+  position: absolute; top: -.35rem; right: -.35rem;   /* relative parent + absolute child */
+  background: var(--gold); color: var(--coffee-2);
+  font-family: var(--font-body); font-weight: 700; font-size: .72rem;
+  min-width: 1.4rem; height: 1.4rem; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--paper);
+}
+.navbar .cart-btn{ position: relative; inset: auto; box-shadow:none; width:2.6rem; height:2.6rem; }
+
+/* ==========================================================
+   3. HERO — FLEXBOX centring (Section 1)
+   ========================================================== */
+.hero{
+  grid-area: hero;
+  background: radial-gradient(60% 120% at 85% 0%, var(--paper-2), transparent 60%), var(--paper);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 16rem;
+  padding: var(--space-4) var(--space-3);
+}
+.hero h1{ font-size: clamp(1.9rem, 1.4rem + 2vw, 3rem); max-width: 20ch; line-height: 1.08; }
+.hero h1 em{ color: var(--clay); font-style: italic; }
+.hero p{ margin-top: var(--space-2); max-width: 46ch; opacity: .8; }
+
+/* ==========================================================
+   4. SIDEBAR — sticky, Flexbox column of category filters (Sec 1 + 3)
+   ========================================================== */
+.aside{
+  grid-area: aside;
+  padding: var(--space-3) var(--space-2);
+  position: sticky;
+  top: var(--nav-h);                 /* sticks right under the sticky navbar */
+  align-self: start;
+  height: fit-content;
+  max-height: calc(100vh - var(--nav-h));
+  overflow-y: auto;
+}
+.aside h2{ font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--clay); margin-bottom: var(--space-2); }
+.filters{
+  display: flex;
+  flex-direction: column;            /* Flexbox column: one axis, vertical */
+  gap: .4rem;
+}
+.filters button{
+  text-align: left;
+  padding: .6em .9em;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  font-size: .92rem;
+}
+.filters button:hover{ border-color: var(--line); }
+.filters button.active{
+  background: var(--coffee); color: var(--paper);
+}
+@media (max-width: 860px){
+  .aside{ position: static; max-height:none; }
+  .filters{ flex-direction: row; flex-wrap: wrap; }
+}
+
+/* ==========================================================
+   5. MAIN — sticky sub-header + auto-fit GRID of cards (Sec 2)
+   ========================================================== */
+.main{ grid-area: main; padding: var(--space-3); }
+.menu-head{
+  position: sticky;
+  top: var(--nav-h);
+  z-index: 5;
+  background: var(--paper);
+  padding-block: .6rem;
+  margin-bottom: var(--space-2);
+  border-bottom: 1px dashed var(--line);
+}
+.menu-head h2{ font-size: 1.5rem; }
+.menu-head span{ font-size: .85rem; opacity: .65; }
+
+.menu-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));  /* the auto-fit pattern to memorise */
+  grid-auto-rows: 1fr;
+  gap: var(--space-2);
+}
+
+/* Explicit placement: the Chef's Pick spans two tracks, like the
+   deck's .feature { grid-column: 1 / 3 } example */
+.card.chefs-pick{
+  grid-column: span 2;
+}
+@media (max-width: 40rem){ .card.chefs-pick{ grid-column: span 1; } }
+
+/* ==========================================================
+   6. CARDS — relative anchor + absolute badge, Flexbox insides
+   ========================================================== */
+.card{
+  --accent: var(--gold);
+  position: relative;                /* the containing block for .badge */
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 1.1em;
+  box-shadow: 0 2px 10px var(--shadow);
+  display: flex;
+  flex-direction: column;            /* Flexbox: title → desc → footer, in a column */
+  gap: .55em;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.card:hover{ transform: translateY(-3px); box-shadow: 0 10px 22px var(--shadow); }
+.card.is-hidden{ display: none; }
+
+.card[data-cat="starters"]{ --accent: var(--clay); }
+.card[data-cat="mains"]{    --accent: var(--gold); }
+.card[data-cat="vegan"]{    --accent: var(--teal); }
+.card[data-cat="drinks"]{   --accent: var(--coffee); }
+
+.card .badge{
+  position: absolute;                /* absolute vs. the card's relative box */
+  top: -.6rem; right: .9rem;
+  background: var(--clay); color: #fff;
+  font-size: .68rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  padding: .3em .7em; border-radius: 999px;
+  box-shadow: 0 3px 8px var(--shadow);
+}
+.card .row{ display: flex; justify-content: space-between; align-items: baseline; gap: .5em; }
+.card h3{ font-size: 1.1rem; }
+.card .amharic{ font-family: 'Noto Sans Ethiopic', var(--font-body); opacity: .7; font-size: .88rem; }
+.card p.desc{ font-size: .9rem; opacity: .82; }
+
+.card .footer-row{
+  margin-top: auto;                  /* pins price + button to the bottom of the flex column */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6em;
+}
+.card .price{ font-weight: 700; color: var(--accent); }
+.card .price::before{ content: "ETB "; font-family: var(--font-body); font-size: .68em; opacity: .75; }
+.card .add-btn{
+  background: var(--coffee); color: var(--paper);
+  padding: .5em .9em; border-radius: var(--radius-sm);
+  font-size: .82rem; font-weight: 600;
+}
+.card .add-btn:hover{ background: var(--clay); }
+
+/* ==========================================================
+   7. CART DRAWER — fixed panel + backdrop, z-index stacking (Sec 3)
+   ========================================================== */
+.cart-backdrop{
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: var(--z-backdrop);
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s ease;
+}
+.cart-drawer{
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: min(24rem, 100%);
+  background: var(--card);
+  z-index: var(--z-drawer);          /* sits above the backdrop, above everything else */
+  transform: translateX(100%);
+  transition: transform .25s ease;
+  display: flex; flex-direction: column;
+  box-shadow: -12px 0 30px var(--shadow);
+}
+body.cart-open .cart-backdrop{ opacity: 1; pointer-events: auto; }
+body.cart-open .cart-drawer{ transform: translateX(0); }
+
+.cart-drawer .head{
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--space-2) var(--space-3);
+  background: var(--coffee); color: var(--paper);
+  border-bottom: 3px solid var(--gold);
+}
+.cart-drawer .items{ flex: 1; overflow-y: auto; padding: var(--space-2) var(--space-3); display: flex; flex-direction: column; gap: .7rem; }
+.cart-drawer .empty{ opacity: .6; font-size: .9rem; padding-top: var(--space-3); text-align: center; }
+.cart-item{ display: flex; justify-content: space-between; align-items: center; gap: .5rem; font-size: .9rem; border-bottom: 1px solid var(--line); padding-bottom: .6rem; }
+.cart-item .name{ font-weight: 600; }
+.cart-item button{ opacity: .6; font-size: .8rem; text-decoration: underline; }
+.cart-item button:hover{ opacity: 1; }
+.cart-drawer .total{
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--line);
+  display: flex; justify-content: space-between; align-items: center;
+  font-weight: 700; font-size: 1.05rem;
+}
+.cart-drawer .total .price::before{ content:"ETB "; font-size:.68em; opacity:.7; }
+.cart-drawer .checkout{
+  margin: 0 var(--space-3) var(--space-3);
+  background: var(--clay); color: #fff; padding: .8em; border-radius: var(--radius-sm); font-weight: 600;
+}
+
+/* ==========================================================
+   8. FOOTER — Flexbox row, wraps
+   ========================================================== */
+footer{
+  grid-area: footer;
+  background: var(--coffee); color: var(--paper);
+  border-top: 3px solid var(--gold);
+}
+footer .inner{
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-2);
+  padding: var(--space-3);
+  font-size: .85rem;
+}
+footer .note{ opacity: .65; max-width: 44ch; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="navbar">
+    <div class="inner">
+      <span class="brand"><span class="mark">Habesha</span> Eatery</span>
+      <nav class="links">
+        <a href="#hero">Home</a>
+        <a href="#menu">Menu</a>
+        <a href="#about">About</a>
+      </nav>
+      <div class="right">
+        <label class="switch" for="theme-toggle">
+          <input type="checkbox" id="theme-toggle">
+          <span class="track" aria-hidden="true"></span>
+          <span>Night</span>
+        </label>
+        <button class="cart-btn" id="cartOpenNav" aria-haspopup="true" aria-label="Open cart">
+          🧺<span class="count" id="navCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero" id="hero">
+    <h1>Order ahead, <em>skip the queue.</em></h1>
+    <p>Every dish from the Habesha Eatery table, ready when you walk in. Pick a category, build your tray, and check out from the cart.</p>
+  </section>
+
+  <aside class="aside" id="about">
+    <h2>Categories</h2>
+    <div class="filters" id="filters">
+      <button data-cat="all" class="active">All dishes</button>
+      <button data-cat="starters">Starters</button>
+      <button data-cat="mains">Mains</button>
+      <button data-cat="vegan">Fasting (Vegan)</button>
+      <button data-cat="drinks">Drinks</button>
+    </div>
+  </aside>
+
+  <main class="main" id="menu">
+    <div class="menu-head">
+      <h2 id="menuHeadTitle">All dishes</h2>
+      <span>Served with fresh injera · prices in ETB</span>
+    </div>
+
+    <div class="menu-grid" id="menuGrid">
+
+      <article class="card chefs-pick" data-cat="mains" data-name="Doro Wat" data-price="320">
+        <span class="badge">Chef's Pick</span>
+        <div class="row"><h3>Doro Wat</h3><span class="amharic">ዶሮ ወጥ</span></div>
+        <p class="desc">Chicken simmered for hours in berbere and niter kibbeh, with a hard-boiled egg. Our signature — serves two comfortably.</p>
+        <div class="footer-row">
+          <span class="price">320</span>
+          <button class="add-btn">Add to cart</button>
+        </div>
+      </article>
+
+      <article class="card" data-cat="starters" data-name="Sambusa" data-price="90">
+        <div class="row"><h3>Sambusa</h3><span class="amharic">ሳምቡሳ</span></div>
+        <p class="desc">Crisp pastry filled with spiced lentils, onion and berbere.</p>
+        <div class="footer-row"><span class="price">90</span><button class="add-btn">Add to cart</button></div>
+      </article>
+
+      <article class="card" data-cat="starters" data-name="Azifa" data-price="110">
+        <div class="row"><h3>Azifa</h3><span class="amharic">አዚፋ</span></div>
+        <p class="desc">Cold green lentil salad with mustard, jalapeño and lime.</p>
+        <div class="footer-row"><span class="price">110</span><button class="add-btn">Add to cart</button></div>
+      </article>
+
+      <article class="card" data-cat="mains" data-name="Kitfo" data-price="340">
+        <span class="badge">Spicy</span>
+        <div class="row"><h3>Kitfo</h3><span class="amharic">ክትፎ</span></div>
+        <p class="desc">Hand-minced beef warmed gently in mitmita and spiced butter.</p>
+        <div class="footer-row"><span class="price">340</span><button class="add-btn">Add to cart</button></div>
+      </article>
+
+      <article class="card" data-cat="mains" data-name="Tibs" data-price="300">
+        <div class="row"><h3>Tibs</h3><span class="amharic">ጥብስ</span></div>
+        <p class="desc">Pan-seared beef with rosemary, onion and green jalapeño.</p>
+        <div class="footer-row"><span class="price">300</span><button class="add-btn">Add to cart</button></div>
+      </article>
+
+      <article class="card" data-cat="vegan" data-name="Shiro" data-price="180">
+        <div class="row"><h3>Shiro</h3><span class="amharic">ሽሮ</span></div>
+        <p class="desc">Chickpea flour slow-simmered into a velvety, deeply spiced stew.</p>
+        <div class="footer-row"><span class="price">180</span><button class="add-btn">Add to cart</button></div>
+      </article>
+
+      <article class="card" data-cat="vegan" data-name="Misir Wat" data-price="170">
+        <div class="row"><h3>Misir Wat</h3><span class="amharic">ምስር ወጥ</span></div>
+        <p class="desc">Red lentils simmered with berbere, garlic and ginger.</p>
+        <div class="footer-row"><span class="price">170</span><button class="add-btn">Add to cart</button></div>
+      </article>
+
+      <article class="card" data-cat="vegan" data-name="Gomen" data-price="160">
+        <div class="row"><h3>Gomen</h3><span class="amharic">ጎመን</span></div>
+        <p class="desc">Collard greens braised with garlic, ginger and green chili.</p>
+        <div class="footer-row"><span class="price">160</span><button class="add-btn">Add to cart</button></div>
+      </article>
+
+      <article class="card" data-cat="drinks" data-name="Buna" data-price="90">
+        <div class="row"><h3>Buna</h3><span class="amharic">ቡና</span></div>
+        <p class="desc">The full coffee ceremony: beans roasted, brewed and poured in three rounds.</p>
+        <div class="footer-row"><span class="price">90</span><button class="add-btn">Add to cart</button></div>
+      </article>
+
+      <article class="card" data-cat="drinks" data-name="Tej" data-price="140">
+        <div class="row"><h3>Tej</h3><span class="amharic">ጠጅ</span></div>
+        <p class="desc">Honey wine spiced with gesho leaf, served chilled in a berele flask.</p>
+        <div class="footer-row"><span class="price">140</span><button class="add-btn">Add to cart</button></div>
+      </article>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="inner">
+      <span>Habesha Eatery · Addis Ababa</span>
+      <span class="note">One Grid skeleton (nav / hero / sidebar / main / footer), a sticky Flexbox navbar, an auto-fit card gallery, and a fixed cart drawer with a documented z-index scale — the whole Day 14 toolkit, composed on one page.</span>
+    </div>
+  </footer>
+</div>
+
+<button class="cart-btn" id="cartOpenFloat" aria-haspopup="true" aria-label="Open cart">
+  🧺<span class="count" id="floatCount">0</span>
+</button>
+
+<div class="cart-backdrop" id="cartBackdrop"></div>
+<aside class="cart-drawer" id="cartDrawer" aria-label="Your cart">
+  <div class="head">
+    <strong>Your tray</strong>
+    <button id="cartClose" aria-label="Close cart" style="font-size:1.2rem;">✕</button>
+  </div>
+  <div class="items" id="cartItems">
+    <p class="empty">Nothing on the tray yet — add a dish from the menu.</p>
+  </div>
+  <div class="total">
+    <span>Total</span>
+    <span class="price" id="cartTotal">0</span>
+  </div>
+  <button class="checkout" id="cartCheckout">Checkout</button>
+</aside>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Category filtering (Flexbox sidebar → Grid gallery) ---------- */
+  var filterBtns = document.querySelectorAll('#filters button');
+  var cards = document.querySelectorAll('.card');
+  var headTitle = document.getElementById('menuHeadTitle');
+
+  filterBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      filterBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var cat = btn.dataset.cat;
+      headTitle.textContent = btn.textContent;
+      cards.forEach(function(card){
+        var show = (cat === 'all' || card.dataset.cat === cat);
+        card.classList.toggle('is-hidden', !show);
+      });
+    });
+  });
+
+  /* ---------- Cart ---------- */
+  var cart = {};   // name -> { price, qty }
+
+  var cartItemsEl = document.getElementById('cartItems');
+  var cartTotalEl = document.getElementById('cartTotal');
+  var navCountEl = document.getElementById('navCount');
+  var floatCountEl = document.getElementById('floatCount');
+
+  function renderCart(){
+    var names = Object.keys(cart);
+    var count = 0, total = 0;
+
+    if(names.length === 0){
+      cartItemsEl.innerHTML = '<p class="empty">Nothing on the tray yet — add a dish from the menu.</p>';
+    } else {
+      cartItemsEl.innerHTML = '';
+      names.forEach(function(name){
+        var item = cart[name];
+        count += item.qty;
+        total += item.qty * item.price;
+        var row = document.createElement('div');
+        row.className = 'cart-item';
+        row.innerHTML =
+          '<span class="name">' + item.qty + '× ' + name + '</span>' +
+          '<button data-name="' + name + '">remove</button>';
+        cartItemsEl.appendChild(row);
+      });
+    }
+
+    cartTotalEl.textContent = total;
+    navCountEl.textContent = count;
+    floatCountEl.textContent = count;
+  }
+
+  document.querySelectorAll('.add-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var card = btn.closest('.card');
+      var name = card.dataset.name;
+      var price = Number(card.dataset.price);
+      if(!cart[name]) cart[name] = { price: price, qty: 0 };
+      cart[name].qty += 1;
+      renderCart();
+    });
+  });
+
+  cartItemsEl.addEventListener('click', function(e){
+    if(e.target.matches('button[data-name]')){
+      delete cart[e.target.dataset.name];
+      renderCart();
+    }
+  });
+
+  /* ---------- Drawer open/close ---------- */
+  function openCart(){ document.body.classList.add('cart-open'); }
+  function closeCart(){ document.body.classList.remove('cart-open'); }
+
+  document.getElementById('cartOpenNav').addEventListener('click', openCart);
+  document.getElementById('cartOpenFloat').addEventListener('click', openCart);
+  document.getElementById('cartClose').addEventListener('click', closeCart);
+  document.getElementById('cartBackdrop').addEventListener('click', closeCart);
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeCart(); });
+
+  document.getElementById('cartCheckout').addEventListener('click', function(){
+    if(Object.keys(cart).length === 0) return;
+    alert('Thanks! Your tray is on its way to the kitchen.');
+    cart = {};
+    renderCart();
+    closeCart();
+  });
+
+  renderCart();
+})();
+</script>
+
+</body>
+</html>
