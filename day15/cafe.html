@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Section 1: the single most important line for mobile -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Habesha Eatery — Addis Ababa</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=Noto+Sans+Ethiopic:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================
+   RESET + TOKENS  (carried over from Days 13–14)
+   ========================================================== */
+*, *::before, *::after{ box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+
+:root{
+  --paper:#F1DFAF; --paper-2:#E8D093; --ink:#2A1B10;
+  --coffee:#3C2415; --coffee-2:#2A1810;
+  --gold:#C9962B; --clay:#B34B2E; --teal:#2E6E5C;
+  --card:#FFFCF5; --line:rgba(42,27,16,.16); --shadow:rgba(42,27,16,.22);
+  --radius-lg:1rem; --radius-sm:.5rem;
+  --space-1:.5rem; --space-2:1rem; --space-3:1.75rem; --space-4:3rem;
+  --font-display:'Fraunces', Georgia, serif;
+  --font-body:'Work Sans', 'Noto Sans Ethiopic', Arial, sans-serif;
+  --font-mono:'JetBrains Mono', Menlo, monospace;
+  --nav-h: 4rem;
+}
+body:has(#theme-toggle:checked){
+  --paper:#181109; --paper-2:#21160c; --ink:#F1E2BE;
+  --coffee:#0F0A06; --coffee-2:#000;
+  --card:#241809; --line:rgba(241,226,190,.14); --shadow:rgba(0,0,0,.55);
+}
+
+html{ font-size:16px; scroll-behavior:smooth; }
+body{ background:var(--paper); color:var(--ink); font-family:var(--font-body); line-height:1.6; }
+h1,h2,h3,.brand{ font-family:var(--font-display); }
+a{ color:inherit; }
+ul{ list-style:none; }
+
+/* Section 1: the golden image rule — every image, everywhere */
+img{ max-width:100%; height:auto; display:block; }
+
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, label:focus-within{
+  outline:3px solid var(--teal); outline-offset:2px;
+}
+
+/* Section 2: respect the user's motion preference — non-negotiable */
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+}
+
+.visually-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+.wrap{ width:100%; max-width:68rem; margin-inline:auto; padding-inline:var(--space-3); }
+.eyebrow{ font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--clay); font-weight:600; }
+
+/* ==========================================================
+   NAVBAR — Flexbox + an off-canvas mobile pattern (Section 1)
+   Base styles below are the MOBILE layout: no query needed.
+   Wider-screen rules live inside min-width queries further down —
+   mobile-first, building up rather than down.
+   ========================================================== */
+.navbar{
+  position: sticky; top: 0; z-index: 50;
+  background: var(--coffee); color: var(--paper);
+  border-bottom: 3px solid var(--gold);
+  height: var(--nav-h);
+}
+.navbar .inner{
+  height:100%; display:flex; align-items:center; justify-content:space-between;
+  gap: var(--space-2); padding-inline: var(--space-3);
+}
+.brand{ font-weight:600; font-size:1.3rem; }
+.brand .mark{ color:var(--gold); }
+
+.hamburger{
+  display:flex; align-items:center; justify-content:center;
+  width:2.4rem; height:2.4rem; font-size:1.3rem; cursor:pointer; border-radius:var(--radius-sm);
+}
+.hamburger:hover{ background:rgba(255,255,255,.08); }
+
+.nav-links{
+  position: fixed; top:0; right:0; height:100vh; width:min(78vw, 20rem);
+  background: var(--coffee-2); padding: calc(var(--nav-h) + var(--space-2)) var(--space-3) var(--space-3);
+  display:flex; flex-direction:column; gap: var(--space-2);
+  transform: translateX(100%);
+  transition: transform 250ms ease;               /* Section 2: a named, tasteful transition */
+  z-index: 55;
+}
+.nav-links a{ text-decoration:none; font-size:1.05rem; opacity:.9; }
+.nav-links a:hover{ opacity:1; color:var(--gold); }
+.nav-links .close{ align-self:flex-end; font-size:1.4rem; cursor:pointer; margin-bottom:var(--space-2); }
+.nav-links .cta{
+  margin-top:auto; background:var(--clay); color:#fff; text-align:center;
+  padding:.8em; border-radius:var(--radius-sm); font-weight:600; text-decoration:none;
+}
+#nav-toggle:checked ~ .nav-links{ transform: translateX(0); }
+
+.switch{ display:inline-flex; align-items:center; gap:.5em; font-size:.78rem; cursor:pointer; }
+.switch input{ position:absolute; width:1px; height:1px; opacity:0; }
+.switch .track{
+  --w:2.5em; --h:1.45em; width:var(--w); height:var(--h);
+  background: var(--coffee-2); border:1px solid var(--gold); border-radius:var(--h); position:relative;
+  transition: background 200ms ease;
+}
+.switch .track::after{
+  content:""; position:absolute; top:2px; left:2px;
+  width:calc(var(--h) - 6px); height:calc(var(--h) - 6px); border-radius:50%; background:var(--gold);
+  transition: transform 200ms ease;
+}
+.switch input:checked ~ .track{ background:var(--teal); }
+.switch input:checked ~ .track::after{ transform: translateX(calc(var(--w) - var(--h))); }
+
+/* Enhance for tablet+: nav becomes a normal inline row, hamburger disappears */
+@media (min-width: 768px){
+  .hamburger{ display:none; }
+  .nav-links{
+    position:static; height:auto; width:auto; background:transparent;
+    flex-direction:row; align-items:center; padding:0; transform:none; transition:none;
+  }
+  .nav-links .close{ display:none; }
+  .nav-links .cta{ margin-top:0; padding:.5em 1em; }
+}
+
+/* ==========================================================
+   HERO — fluid type with clamp(), a real responsive image
+   ========================================================== */
+.hero{
+  background: radial-gradient(60% 120% at 85% 0%, var(--paper-2), transparent 60%), var(--paper);
+  border-bottom:1px solid var(--line);
+}
+.hero .wrap{
+  padding-block: var(--space-4);
+  display:flex; flex-direction:column; gap: var(--space-3);      /* mobile: stack */
+}
+.hero h1{
+  font-size: clamp(1.9rem, 1.3rem + 3vw, 3.4rem);                /* Section 1: fluid type, one rule for every width */
+  line-height:1.06; max-width:18ch;
+}
+.hero h1 em{ color:var(--clay); font-style:italic; }
+.hero p{ margin-top: var(--space-2); max-width:44ch; opacity:.82; }
+.hero .actions{ margin-top:var(--space-3); display:flex; gap:.8rem; flex-wrap:wrap; }
+.btn{
+  display:inline-block; padding:.8em 1.3em; border-radius:var(--radius-sm); font-weight:600; text-decoration:none;
+  transition: transform 150ms ease, box-shadow 150ms ease;        /* Section 2: named-property transition */
+}
+.btn:hover{ transform: translateY(-2px); }
+.btn-primary{ background:var(--clay); color:#fff; box-shadow:0 6px 0 var(--coffee-2); }
+.btn-primary:hover{ box-shadow:0 8px 14px var(--shadow); }
+.btn-ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); }
+.btn-ghost:hover{ border-color:var(--clay); }
+
+.hero .figure{ border-radius:var(--radius-lg); overflow:hidden; box-shadow:0 12px 30px var(--shadow); }
+.hero .figure img{ width:100%; height:14rem; object-fit:cover; }
+
+@media (min-width: 860px){
+  .hero .wrap{ flex-direction:row; align-items:center; }
+  .hero .copy{ flex:1.2; }
+  .hero .figure{ flex:1; }
+  .hero .figure img{ height:100%; }
+}
+
+/* ==========================================================
+   ABOUT — the site's story + a small utility-first comparison
+   ========================================================== */
+.about{ padding-block: var(--space-4); }
+.about .wrap{ display:flex; flex-direction:column; gap: var(--space-3); }
+.about h2{ font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2.2rem); margin-top:.3em; }
+.about p{ margin-top: var(--space-2); max-width: 62ch; opacity:.85; }
+
+.code-compare{
+  margin-top: var(--space-3);
+  display:grid; gap: var(--space-2);
+  grid-template-columns: 1fr;                       /* mobile: stacked */
+}
+@media (min-width: 768px){ .code-compare{ grid-template-columns: 1fr 1fr; } }
+.code-card{ background:var(--coffee-2); color:var(--paper); border-radius:var(--radius-sm); overflow:hidden; }
+.code-card .tag{
+  font-size:.68rem; letter-spacing:.1em; text-transform:uppercase;
+  padding:.5em .9em; background: rgba(255,255,255,.06); color:var(--gold); font-weight:700;
+}
+.code-card pre{ padding: var(--space-2); font-family: var(--font-mono); font-size:.8rem; overflow-x:auto; line-height:1.55; }
+.code-card .cls{ color:#9fd6c2; }
+.code-card .attr{ color:#e7c07a; }
+
+/* ==========================================================
+   MENU — reflows 1 → 2 → 3 columns, exactly as the brief asks,
+   built the mobile-first way: one column is the base, then two
+   explicit min-width queries ENHANCE it. (Section 1)
+   ========================================================== */
+.menu{ padding-block: var(--space-4); background: var(--paper-2); border-block:1px solid var(--line); }
+.menu-head{ margin-bottom: var(--space-3); }
+.menu-head h2{ font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2.2rem); margin-top:.3em; }
+
+.menu-grid{
+  display:grid;
+  grid-template-columns: 1fr;                        /* base: one column, phone */
+  gap: var(--space-2);
+}
+@media (min-width: 640px){  .menu-grid{ grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1024px){ .menu-grid{ grid-template-columns: 1fr 1fr 1fr; } }
+
+.card{
+  --accent: var(--gold);
+  position:relative;
+  background:var(--card); border:1px solid var(--line); border-top:4px solid var(--accent);
+  border-radius:var(--radius-sm); padding:1.1em; box-shadow:0 2px 10px var(--shadow);
+  display:flex; flex-direction:column; gap:.5em;
+  transition: transform 200ms ease, box-shadow 200ms ease;        /* Section 2: transform + opacity are the cheap, smooth ones */
+}
+.card:hover{ transform: translateY(-4px) scale(1.015); box-shadow:0 12px 24px var(--shadow); }
+.card[data-cat="starters"]{ --accent:var(--clay); }
+.card[data-cat="mains"]{    --accent:var(--gold); }
+.card[data-cat="vegan"]{    --accent:var(--teal); }
+.card[data-cat="drinks"]{   --accent:var(--coffee); }
+.card .badge{
+  position:absolute; top:-.6rem; right:.9rem;
+  background:var(--clay); color:#fff; font-size:.66rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+  padding:.3em .7em; border-radius:999px; box-shadow:0 3px 8px var(--shadow);
+}
+.card .row{ display:flex; justify-content:space-between; align-items:baseline; gap:.5em; }
+.card h3{ font-size:1.05rem; }
+.card .amharic{ font-family:'Noto Sans Ethiopic', var(--font-body); opacity:.7; font-size:.85rem; }
+.card p{ font-size:.88rem; opacity:.82; }
+.card .price{ margin-top:auto; font-weight:700; color:var(--accent); }
+.card .price::before{ content:"ETB "; font-family:var(--font-body); font-size:.68em; opacity:.75; }
+
+/* ==========================================================
+   RESERVATION — native HTML validation only, no JavaScript
+   ========================================================== */
+.reserve{ padding-block: var(--space-4); }
+.reserve .wrap{ display:flex; flex-direction:column; gap: var(--space-3); }
+.reserve h2{ font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2.2rem); margin-top:.3em; }
+
+form.card-form{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--radius-lg);
+  padding: var(--space-3); box-shadow:0 4px 16px var(--shadow);
+  display:grid; grid-template-columns: 1fr; gap: var(--space-2);   /* mobile: one column */
+}
+@media (min-width: 700px){ form.card-form{ grid-template-columns: 1fr 1fr; } }
+.field{ display:flex; flex-direction:column; gap:.35em; }
+.field.full{ grid-column: 1 / -1; }
+.field label{ font-size:.85rem; font-weight:600; }
+.field input, .field select, .field textarea{
+  font: inherit; padding:.7em .8em; border-radius:var(--radius-sm); border:1px solid var(--line);
+  background: var(--paper); color:var(--ink);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.field textarea{ resize:vertical; min-height:5rem; }
+.field input:focus, .field select:focus, .field textarea:focus{ border-color:var(--teal); }
+.field input:invalid:not(:placeholder-shown), .field input:required:invalid:focus{ border-color:var(--clay); }
+.field .hint{ font-size:.75rem; opacity:.6; }
+
+.reserve .submit-row{ grid-column:1/-1; display:flex; align-items:center; gap:var(--space-2); flex-wrap:wrap; }
+.reserve .demo-note{ font-size:.8rem; opacity:.65; }
+
+/* --- Pure-CSS "confirmation" demo, no JavaScript: :target + @keyframes --- */
+.toast{
+  position: fixed; left:50%; bottom:1.5rem; z-index:60;
+  transform: translate(-50%, 12px);
+  background: var(--coffee); color:var(--paper); border:1px solid var(--gold);
+  padding: .9em 1.3em; border-radius:999px; box-shadow:0 10px 26px var(--shadow);
+  display:flex; align-items:center; gap:.8em;
+  opacity:0; pointer-events:none;
+}
+.toast a{ text-decoration:underline; font-size:.85rem; opacity:.8; }
+#confirm-toast:target{                                            /* Section 4/2: @keyframes triggered with zero JS */
+  opacity:1; pointer-events:auto;
+  animation: toast-in 320ms ease-out;
+}
+@keyframes toast-in{
+  from{ opacity:0; transform: translate(-50%, 20px); }
+  to  { opacity:1; transform: translate(-50%, 0); }
+}
+
+/* ==========================================================
+   FOOTER
+   ========================================================== */
+footer{ background:var(--coffee); color:var(--paper); border-top:3px solid var(--gold); }
+footer .wrap{ padding-block: var(--space-3); display:flex; flex-wrap:wrap; justify-content:space-between; gap: var(--space-3); }
+footer h3{ font-size:.95rem; color:var(--gold); margin-bottom:.5em; }
+footer p, footer li{ font-size:.88rem; opacity:.85; line-height:1.8; }
+footer .col{ min-width:12rem; }
+</style>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="inner">
+    <span class="brand"><span class="mark">Habesha</span> Eatery</span>
+
+    <input type="checkbox" id="nav-toggle" class="visually-hidden">
+    <label class="hamburger" for="nav-toggle" aria-label="Open menu">☰</label>
+
+    <nav class="nav-links" id="navLinks">
+      <label class="close" for="nav-toggle" aria-label="Close menu">✕</label>
+      <a href="#about">About</a>
+      <a href="#menu">Menu</a>
+      <a href="#reserve">Reserve</a>
+      <a href="#contact">Contact</a>
+      <label class="switch" for="theme-toggle">
+        <input type="checkbox" id="theme-toggle">
+        <span class="track" aria-hidden="true"></span>
+        <span>Night mode</span>
+      </label>
+      <a class="cta" href="#reserve">Reserve a table</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="home">
+  <div class="wrap">
+    <div class="copy">
+      <p class="eyebrow">Bole, Addis Ababa</p>
+      <h1>Berbere, patience, <em>and injera for the table.</em></h1>
+      <p>A menu built the way the food is: shared, slow-simmered, and served on one sourdough plate for everyone to reach across.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#reserve">Reserve a table</a>
+        <a class="btn btn-ghost" href="#menu">View the menu</a>
+      </div>
+    </div>
+    <div class="figure">
+      <img
+        src="https://picsum.photos/id/292/480/360"
+        srcset="https://picsum.photos/id/292/480/360 480w,
+                https://picsum.photos/id/292/900/675 900w,
+                https://picsum.photos/id/292/1400/1050 1400w"
+        sizes="(max-width: 860px) 100vw, 40vw"
+        alt="A shared table set for a meal at Habesha Eatery"
+        loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="wrap">
+    <p class="eyebrow">Our story</p>
+    <h2>Slow food, served fast enough for a lunch break.</h2>
+    <p>Habesha Eatery opened on a corner in Bole with one wood table and a jebena that never stopped brewing. Everything on the menu still comes from that first kitchen: berbere ground weekly, injera fermented for three days, and a coffee ceremony we still run in full for anyone who has the time to sit through it.</p>
+
+    <div class="code-compare">
+      <div class="code-card">
+        <p class="tag">Hand-written CSS</p>
+        <pre>&lt;a <span class="attr">class</span>=<span class="cls">"btn-primary"</span>&gt;
+  Reserve a table
+&lt;/a&gt;
+
+.btn-primary {
+  background: var(--clay);
+  padding: .8em 1.3em;
+  border-radius: .5rem;
+}</pre>
+      </div>
+      <div class="code-card">
+        <p class="tag">Same button, utility-first</p>
+        <pre>&lt;a <span class="attr">class</span>=<span class="cls">"bg-clay-600 px-5 py-3
+  rounded-lg text-white
+  hover:-translate-y-0.5"</span>&gt;
+  Reserve a table
+&lt;/a&gt;</pre>
+      </div>
+    </div>
+    <p style="font-size:.85rem; opacity:.7; max-width:56ch;">This whole site is written by hand, the way you've built it since Day 13 — but a Tailwind rebuild would compose the very same properties as classes straight in the markup, at Ethiopia's real breakpoints, with no separate stylesheet to maintain.</p>
+  </div>
+</section>
+
+<section class="menu" id="menu">
+  <div class="wrap">
+    <div class="menu-head">
+      <p class="eyebrow">Today's menu</p>
+      <h2>One column on a phone, three on a laptop</h2>
+    </div>
+    <div class="menu-grid">
+
+      <article class="card" data-cat="mains">
+        <span class="badge">Signature</span>
+        <div class="row"><h3>Doro Wat</h3><span class="amharic">ዶሮ ወጥ</span></div>
+        <p>Chicken simmered for hours in berbere and niter kibbeh, with a hard-boiled egg.</p>
+        <span class="price">320</span>
+      </article>
+
+      <article class="card" data-cat="starters">
+        <div class="row"><h3>Sambusa</h3><span class="amharic">ሳምቡሳ</span></div>
+        <p>Crisp pastry filled with spiced lentils, onion and berbere.</p>
+        <span class="price">90</span>
+      </article>
+
+      <article class="card" data-cat="starters">
+        <div class="row"><h3>Azifa</h3><span class="amharic">አዚፋ</span></div>
+        <p>Cold green lentil salad with mustard, jalapeño and lime.</p>
+        <span class="price">110</span>
+      </article>
+
+      <article class="card" data-cat="mains">
+        <span class="badge">Spicy</span>
+        <div class="row"><h3>Kitfo</h3><span class="amharic">ክትፎ</span></div>
+        <p>Hand-minced beef warmed gently in mitmita and spiced butter.</p>
+        <span class="price">340</span>
+      </article>
+
+      <article class="card" data-cat="vegan">
+        <div class="row"><h3>Shiro</h3><span class="amharic">ሽሮ</span></div>
+        <p>Chickpea flour slow-simmered into a velvety, deeply spiced stew.</p>
+        <span class="price">180</span>
+      </article>
+
+      <article class="card" data-cat="drinks">
+        <div class="row"><h3>Buna</h3><span class="amharic">ቡና</span></div>
+        <p>The full coffee ceremony: beans roasted, brewed and poured in three rounds.</p>
+        <span class="price">90</span>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section class="reserve" id="reserve">
+  <div class="wrap">
+    <p class="eyebrow">Book ahead</p>
+    <h2>Reserve a table</h2>
+
+    <form class="card-form" action="#confirm-toast" method="get">
+      <div class="field">
+        <label for="r-name">Full name</label>
+        <input id="r-name" name="name" type="text" required placeholder="Almaz Bekele">
+      </div>
+      <div class="field">
+        <label for="r-phone">Phone</label>
+        <input id="r-phone" name="phone" type="tel" required pattern="[0-9+\s-]{7,15}" placeholder="+251 9xx xxx xxx">
+      </div>
+      <div class="field">
+        <label for="r-date">Date</label>
+        <input id="r-date" name="date" type="date" required>
+      </div>
+      <div class="field">
+        <label for="r-time">Time</label>
+        <input id="r-time" name="time" type="time" required>
+      </div>
+      <div class="field">
+        <label for="r-guests">Guests</label>
+        <input id="r-guests" name="guests" type="number" min="1" max="20" value="2" required>
+        <span class="hint">Parties over 8 — call ahead so we can join tables.</span>
+      </div>
+      <div class="field">
+        <label for="r-occasion">Occasion</label>
+        <select id="r-occasion" name="occasion">
+          <option value="regular">Just a meal</option>
+          <option value="coffee">Full coffee ceremony</option>
+          <option value="birthday">Birthday</option>
+          <option value="group">Group / office lunch</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label for="r-notes">Notes</label>
+        <textarea id="r-notes" name="notes" placeholder="Allergies, fasting-only table, seating preference…"></textarea>
+      </div>
+      <div class="submit-row">
+        <a class="btn btn-primary" href="#confirm-toast">Confirm reservation</a>
+        <span class="demo-note">Demo only — this page is static HTML + CSS; a real booking needs a backend, coming with JavaScript next week.</span>
+      </div>
+    </form>
+  </div>
+</section>
+
+<div class="toast" id="confirm-toast" role="status">
+  <span>✓ Table reserved — see you at Habesha Eatery.</span>
+  <a href="#reserve">close</a>
+</div>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="col">
+      <h3>Visit</h3>
+      <p>Habesha Eatery<br>Bole Road, near Edna Mall<br>Addis Ababa, Ethiopia</p>
+    </div>
+    <div class="col">
+      <h3>Hours</h3>
+      <p>Mon–Sat · 11:00–22:00<br>Sun · 12:00–20:00</p>
+    </div>
+    <div class="col">
+      <h3>Contact</h3>
+      <p>+251 11 xxx xxxx<br>hello@habeshaeatery.example</p>
+    </div>
+    <div class="col">
+      <h3>Built with</h3>
+      <p>Viewport meta · mobile-first media queries · clamp() type · srcset images · transitions &amp; keyframes · zero JavaScript.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Habesha Eatery — Digital Menu</title>
+
+<!-- ============================================================
+     Web fonts & loading (Section 3): preconnect, then link, then
+     font-display: swap is set inside @font-face-free Google Fonts
+     query so text is never invisible while the font downloads.
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=Noto+Sans+Ethiopic:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================
+   0. RESET + BOX MODEL (Section 2)
+   box-sizing: border-box on every element and generated box so
+   width always means what we wrote — the first line of any real
+   stylesheet.
+   ========================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+
+/* ==========================================================
+   1. CSS CUSTOM PROPERTIES — design tokens (Section 4)
+   Declared once on :root, read everywhere with var(). Change a
+   value here and the whole menu updates — the basis of theming.
+   ========================================================== */
+:root{
+  --paper:      #F1DFAF;
+  --paper-2:    #E8D093;
+  --ink:        #2A1B10;
+  --coffee:     #3C2415;
+  --coffee-2:   #2A1810;
+  --gold:       #C9962B;
+  --clay:       #B34B2E;
+  --teal:       #2E6E5C;
+  --card:       #FFFCF5;
+  --line:       rgba(42, 27, 16, .16);
+  --shadow:     rgba(42, 27, 16, .18);
+
+  --radius-lg:  1rem;
+  --radius-sm:  .5rem;
+  --space-1:    .5rem;
+  --space-2:    1rem;
+  --space-3:    1.75rem;
+  --space-4:    3rem;
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body:    'Work Sans', 'Noto Sans Ethiopic', Arial, sans-serif;
+}
+
+/* Dark theme: same tokens, new values. Nothing else in the sheet
+   changes — every component just reads the redefined variables.
+   :has() lets a single hidden checkbox retheme the whole document
+   without any JavaScript. */
+body:has(#theme-toggle:checked){
+  --paper:    #181109;
+  --paper-2:  #21160c;
+  --ink:      #F1E2BE;
+  --coffee:   #0F0A06;
+  --coffee-2: #000000;
+  --card:     #241809;
+  --line:     rgba(241, 226, 190, .14);
+  --shadow:   rgba(0, 0, 0, .5);
+}
+
+/* ==========================================================
+   2. TYPOGRAPHY + INHERITANCE (Section 3)
+   Base type set once on body; colour, font-family and line-height
+   inherit down to every descendant automatically.
+   ========================================================== */
+html { font-size: 16px; }               /* 1rem = 16px, the anchor for the whole scale */
+body{
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  transition: background .25s ease, color .25s ease;
+}
+h1, h2, h3, .brand, .price{
+  font-family: var(--font-display);
+}
+::selection{ background: var(--gold); color: var(--coffee-2); }
+
+/* Visible focus for every keyboard-reachable control. Never
+   deleted, only restyled — outline: none with nothing to replace
+   it strands keyboard users. */
+a:focus-visible, label:focus-within, summary:focus-visible, input:focus-visible{
+  outline: 3px solid var(--teal);
+  outline-offset: 3px;
+}
+
+/* ==========================================================
+   3. HIDE-VISUALLY UTILITY (accessible, focusable filter inputs)
+   ========================================================== */
+.visually-hidden{
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ==========================================================
+   4. LAYOUT SHELL
+   ========================================================== */
+.wrap{
+  width: 100%;
+  max-width: 68rem;     /* rem: scales with root font-size */
+  margin-inline: auto;
+  padding-inline: var(--space-3);
+}
+
+header.site{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--coffee);
+  color: var(--paper);
+  border-bottom: 3px solid var(--gold);
+}
+header.site .wrap{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-block: .9em;   /* em: relative to THIS element's font-size */
+}
+.brand{
+  font-weight: 600;
+  font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem); /* vw: scales with viewport */
+  letter-spacing: .02em;
+  color: var(--paper);
+}
+.brand .brand-mark{ color: var(--gold); }
+
+/* Theme switch — a checkbox styled to look like a physical toggle */
+.switch{
+  display: inline-flex;
+  align-items: center;
+  gap: .6em;
+  font-size: .85rem;
+  cursor: pointer;
+}
+.switch input{ position: absolute; opacity: 0; width: 1px; height: 1px; }
+.switch .track{
+  --w: 3em; --h: 1.6em;
+  width: var(--w); height: var(--h);
+  background: var(--coffee-2);
+  border: 1px solid var(--gold);
+  border-radius: var(--h);
+  position: relative;
+  transition: background .2s ease;
+}
+.switch .track::after{
+  content: "";
+  position: absolute;
+  top: 2px; left: 2px;
+  width: calc(var(--h) - 6px);
+  height: calc(var(--h) - 6px);
+  border-radius: 50%;
+  background: var(--gold);
+  transition: transform .2s ease;
+}
+.switch input:checked ~ .track{ background: var(--teal); }
+.switch input:checked ~ .track::after{ transform: translateX(calc(var(--w) - var(--h))); }
+.switch input:focus-visible ~ .track{ outline: 3px solid var(--gold); outline-offset: 3px; }
+
+/* ==========================================================
+   5. HERO
+   ========================================================== */
+.hero{
+  background:
+    radial-gradient(60% 90% at 85% 0%, var(--paper-2), transparent 60%),
+    var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+.hero .wrap{
+  padding-block: var(--space-4);
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: var(--space-4);
+  align-items: center;
+}
+.hero h1{
+  font-size: clamp(2.2rem, 1.6rem + 2.4vw, 3.6rem);
+  line-height: 1.05;
+  font-weight: 700;
+}
+.hero h1 em{ font-style: italic; color: var(--clay); }
+.hero p.lede{
+  margin-top: var(--space-2);
+  max-width: 38ch;
+  color: color-mix(in srgb, var(--ink) 80%, transparent);
+  font-size: 1.05rem;
+}
+.hero .cta{
+  display: inline-block;
+  margin-top: var(--space-3);
+  background: var(--clay);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: .85em 1.4em;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 6px 0 var(--coffee-2);
+  transition: transform .12s ease;
+}
+.hero .cta:hover{ transform: translateY(-2px); }
+.hero .cta:active{ transform: translateY(2px); box-shadow: 0 2px 0 var(--coffee-2); }
+
+/* --- Box-model anatomy diagram: the actual lesson, made visible --- */
+.anatomy{
+  background: var(--coffee);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  color: var(--paper);
+}
+.anatomy p.eyebrow{
+  font-size: .72rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: .75em;
+}
+.box-demo{
+  background: rgba(179, 75, 46, .35);   /* margin layer */
+  border-radius: var(--radius-sm);
+  padding: 18px;
+}
+.box-demo .b-border{
+  background: rgba(201, 150, 43, .35);  /* border layer */
+  border-radius: calc(var(--radius-sm) - 4px);
+  padding: 14px;
+}
+.box-demo .b-padding{
+  background: rgba(46, 110, 92, .45);   /* padding layer */
+  border-radius: calc(var(--radius-sm) - 8px);
+  padding: 16px;
+}
+.box-demo .b-content{
+  background: var(--card);
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-weight: 600;
+  text-align: center;
+  font-size: .9rem;
+}
+.box-demo .tag{
+  font-size: .6rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .8;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ==========================================================
+   6. MENU FILTER — combinators + :checked, zero JavaScript
+   Inputs and .menu-grid are siblings of <section class="menu">,
+   so "#f-x:checked ~ .menu-grid .card" (general sibling + descendant)
+   can reach in and hide every card that doesn't match.
+   ========================================================== */
+.menu{
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  padding-block: var(--space-4);
+}
+.menu > .section-head{ flex-basis: 100%; margin-bottom: var(--space-2); }
+.section-head .eyebrow{
+  font-size: .75rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--clay);
+}
+.section-head h2{ font-size: 1.9rem; margin-top: .2em; }
+
+.chip{
+  display: inline-block;
+  padding: .5em 1.1em;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  font-size: .85rem;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.chip:hover{ border-color: var(--clay); }
+/* adjacent-sibling combinator: style the label right after a focused/checked input */
+.filter-input:focus-visible + .chip{ outline: 3px solid var(--teal); outline-offset: 2px; }
+.filter-input:checked + .chip{
+  background: var(--coffee);
+  color: var(--paper);
+  border-color: var(--coffee);
+}
+
+.menu-grid{
+  flex-basis: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+/* the filtering rules themselves — one per category */
+#f-starters:checked ~ .menu-grid .card:not([data-cat="starters"]),
+#f-mains:checked    ~ .menu-grid .card:not([data-cat="mains"]),
+#f-vegan:checked    ~ .menu-grid .card:not([data-cat="vegan"]),
+#f-drinks:checked   ~ .menu-grid .card:not([data-cat="drinks"]){
+  display: none;
+}
+
+/* ==========================================================
+   7. MENU CARDS — the "putting it together" component
+   ========================================================== */
+.card{
+  --accent: var(--gold);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 1.25em;                 /* em: scales if this card's font-size ever changes */
+  box-shadow: 0 2px 10px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: .6em;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.card:hover, .card:focus-within{
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px var(--shadow);
+  border-color: var(--accent);
+}
+/* per-category accent, set via custom property on the attribute selector */
+.card[data-cat="starters"]{ --accent: var(--clay); }
+.card[data-cat="mains"]{    --accent: var(--gold); }
+.card[data-cat="vegan"]{    --accent: var(--teal); }
+.card[data-cat="drinks"]{   --accent: var(--coffee); }
+
+.card .row{ display: flex; justify-content: space-between; align-items: baseline; gap: .5em; }
+.card h3{ font-size: 1.15rem; }
+.card .amharic{ font-family: 'Noto Sans Ethiopic', var(--font-body); opacity: .75; font-size: .9rem; }
+
+.card .price{
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--accent);
+  white-space: nowrap;
+}
+/* pseudo-element: inject the currency without ever hard-coding it in the markup */
+.card .price::before{
+  content: "ETB ";
+  font-family: var(--font-body);
+  font-size: .68em;
+  font-weight: 600;
+  letter-spacing: .04em;
+  opacity: .75;
+}
+
+.card p.desc{ font-size: .92rem; opacity: .85; }
+
+.card .tags{ list-style: none; display: flex; flex-wrap: wrap; gap: .4em; }
+.card .tags li{
+  font-size: .72rem;
+  padding: .25em .6em;
+  border-radius: 999px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+/* zebra-stripe the tag pills with :nth-child, exactly like the deck's menu rows */
+.card .tags li:nth-child(even){ background: var(--paper-2); }
+
+.card details{ margin-top: auto; font-size: .82rem; }
+.card summary{
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 600;
+  list-style: none;
+}
+.card summary::-webkit-details-marker{ display: none; }
+/* pseudo-element on a native disclosure widget */
+.card summary::before{
+  content: "＋ ";
+  display: inline-block;
+  transition: transform .15s ease;
+}
+.card details[open] summary::before{ content: "－ "; }
+.card details p{ margin-top: .5em; opacity: .8; }
+
+/* ==========================================================
+   8. FOOTER
+   ========================================================== */
+footer{
+  background: var(--coffee);
+  color: var(--paper);
+  border-top: 3px solid var(--gold);
+}
+footer .wrap{
+  padding-block: var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: .85rem;
+}
+footer .note{ opacity: .65; max-width: 42ch; }
+
+/* ==========================================================
+   9. RESPONSIVE — % / vw already do most of the work; tighten
+   the hero grid to one column on small screens.
+   ========================================================== */
+@media (max-width: 46rem){
+  .hero .wrap{ grid-template-columns: 1fr; }
+  .anatomy{ order: -1; }
+}
+
+/* Respect reduced-motion users */
+@media (prefers-reduced-motion: reduce){
+  *{ transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <span class="brand"><span class="brand-mark">Habesha</span> Eatery</span>
+    <label class="switch" for="theme-toggle">
+      <input type="checkbox" id="theme-toggle">
+      <span class="track" aria-hidden="true"></span>
+      <span>Night mode</span>
+    </label>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <h1>Berbere, patience, <em>and injera for the table.</em></h1>
+      <p class="lede">A menu built the way the food is: shared, slow-simmered, and served on one sourdough plate for everyone to reach across.</p>
+      <a class="cta" href="#menu">See the menu</a>
+    </div>
+    <div class="anatomy">
+      <p class="eyebrow">How a card is built</p>
+      <div class="box-demo">
+        <span class="tag">margin</span>
+        <div class="b-border">
+          <span class="tag">border</span>
+          <div class="b-padding">
+            <span class="tag">padding</span>
+            <div class="b-content">Doro Wat — ETB 320</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="menu wrap" id="menu">
+
+  <!-- Filter controls: radios + labels, siblings of .menu-grid -->
+  <input class="filter-input visually-hidden" type="radio" name="filter" id="f-all" checked>
+  <label class="chip" for="f-all">All dishes</label>
+
+  <input class="filter-input visually-hidden" type="radio" name="filter" id="f-starters">
+  <label class="chip" for="f-starters">Starters</label>
+
+  <input class="filter-input visually-hidden" type="radio" name="filter" id="f-mains">
+  <label class="chip" for="f-mains">Mains</label>
+
+  <input class="filter-input visually-hidden" type="radio" name="filter" id="f-vegan">
+  <label class="chip" for="f-vegan">Fasting (Vegan)</label>
+
+  <input class="filter-input visually-hidden" type="radio" name="filter" id="f-drinks">
+  <label class="chip" for="f-drinks">Drinks</label>
+
+  <div class="section-head">
+    <p class="eyebrow">Today's menu</p>
+    <h2>Every plate, one table</h2>
+  </div>
+
+  <div class="menu-grid">
+
+    <article class="card" data-cat="starters">
+      <div class="row"><h3>Sambusa</h3><span class="amharic">ሳምቡሳ</span></div>
+      <p class="desc">Crisp pastry filled with spiced lentils, onion and berbere.</p>
+      <ul class="tags"><li>Vegan</li><li>Crunchy</li><li>Shareable</li></ul>
+      <span class="price">90</span>
+      <details><summary>Allergens & spice</summary><p>Contains wheat. Mild heat.</p></details>
+    </article>
+
+    <article class="card" data-cat="starters">
+      <div class="row"><h3>Azifa</h3><span class="amharic">አዚፋ</span></div>
+      <p class="desc">Cold green lentil salad with mustard, jalapeño and lime.</p>
+      <ul class="tags"><li>Vegan</li><li>Cold</li><li>Tangy</li></ul>
+      <span class="price">110</span>
+      <details><summary>Allergens & spice</summary><p>No common allergens. Medium heat.</p></details>
+    </article>
+
+    <article class="card" data-cat="mains">
+      <div class="row"><h3>Doro Wat</h3><span class="amharic">ዶሮ ወጥ</span></div>
+      <p class="desc">Chicken simmered for hours in berbere and niter kibbeh, with a hard-boiled egg.</p>
+      <ul class="tags"><li>Signature</li><li>Serves 2</li><li>Spicy</li></ul>
+      <span class="price">320</span>
+      <details><summary>Allergens & spice</summary><p>Contains dairy (niter kibbeh). Hot.</p></details>
+    </article>
+
+    <article class="card" data-cat="mains">
+      <div class="row"><h3>Kitfo</h3><span class="amharic">ክትፎ</span></div>
+      <p class="desc">Hand-minced beef warmed gently in mitmita and spiced butter.</p>
+      <ul class="tags"><li>Served leb-leb</li><li>Rich</li><li>Traditional</li></ul>
+      <span class="price">340</span>
+      <details><summary>Allergens & spice</summary><p>Contains dairy. Can be served raw on request.</p></details>
+    </article>
+
+    <article class="card" data-cat="mains">
+      <div class="row"><h3>Tibs</h3><span class="amharic">ጥብስ</span></div>
+      <p class="desc">Pan-seared beef with rosemary, onion and green jalapeño.</p>
+      <ul class="tags"><li>Sizzling</li><li>Serves 2</li><li>Mild</li></ul>
+      <span class="price">300</span>
+      <details><summary>Allergens & spice</summary><p>No common allergens. Mild heat, chilies on the side.</p></details>
+    </article>
+
+    <article class="card" data-cat="vegan">
+      <div class="row"><h3>Shiro</h3><span class="amharic">ሽሮ</span></div>
+      <p class="desc">Chickpea flour slow-simmered into a velvety, deeply spiced stew.</p>
+      <ul class="tags"><li>Vegan</li><li>Fasting</li><li>Comfort</li></ul>
+      <span class="price">180</span>
+      <details><summary>Allergens & spice</summary><p>Contains legumes. Mild heat.</p></details>
+    </article>
+
+    <article class="card" data-cat="vegan">
+      <div class="row"><h3>Misir Wat</h3><span class="amharic">ምስር ወጥ</span></div>
+      <p class="desc">Red lentils simmered with berbere, garlic and ginger.</p>
+      <ul class="tags"><li>Vegan</li><li>Fasting</li><li>Spicy</li></ul>
+      <span class="price">170</span>
+      <details><summary>Allergens & spice</summary><p>Contains legumes. Hot.</p></details>
+    </article>
+
+    <article class="card" data-cat="vegan">
+      <div class="row"><h3>Gomen</h3><span class="amharic">ጎመን</span></div>
+      <p class="desc">Collard greens braised with garlic, ginger and green chili.</p>
+      <ul class="tags"><li>Vegan</li><li>Fasting</li><li>Light</li></ul>
+      <span class="price">160</span>
+      <details><summary>Allergens & spice</summary><p>No common allergens. Mild.</p></details>
+    </article>
+
+    <article class="card" data-cat="drinks">
+      <div class="row"><h3>Buna</h3><span class="amharic">ቡና</span></div>
+      <p class="desc">The full coffee ceremony: beans roasted, brewed and poured in three rounds.</p>
+      <ul class="tags"><li>Ceremony</li><li>Serves 2–3</li><li>Caffeinated</li></ul>
+      <span class="price">90</span>
+      <details><summary>Allergens & spice</summary><p>No common allergens.</p></details>
+    </article>
+
+    <article class="card" data-cat="drinks">
+      <div class="row"><h3>Tej</h3><span class="amharic">ጠጅ</span></div>
+      <p class="desc">Honey wine spiced with gesho leaf, served chilled in a berele flask.</p>
+      <ul class="tags"><li>Alcoholic</li><li>Sweet</li><li>Chilled</li></ul>
+      <span class="price">140</span>
+      <details><summary>Allergens & spice</summary><p>Contains honey. Alcohol content varies by batch.</p></details>
+    </article>
+
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Habesha Eatery · Addis Ababa</span>
+    <span class="note">All mains are served with fresh injera. Every plate on this page is one HTML file — the filter chips, the night switch and the price tags run on selectors, the box model and CSS variables alone, no JavaScript.</span>
+  </div>
+</footer>
+
+</body>
+</html>
